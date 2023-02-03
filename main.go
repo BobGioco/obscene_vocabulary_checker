@@ -5,34 +5,39 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
-var fileName string
+var file_name, word string
+
+func check_word(word string, banned_word string) bool {
+	if strings.ToLower(word) == banned_word {
+		return true
+	}
+	return false
+}
 
 func main() {
-	_, err := fmt.Scan(&fileName)
-	if err != nil {
-		return
-	}
-	file, err := os.Open(fileName)
+	flag := false
+	fmt.Scan(&file_name, &word)
+	file, err := os.Open(file_name)
 	if err != nil {
 		panic(err)
 	}
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-
-		}
-	}(file)
+	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 
 	scanner.Split(bufio.ScanWords)
 	for scanner.Scan() {
-		fmt.Println(scanner.Text())
+		if check_word(word, scanner.Text()) {
+			flag = true
+			break
+		}
 	}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(flag)
 }
