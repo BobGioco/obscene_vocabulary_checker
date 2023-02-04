@@ -8,10 +8,38 @@ import (
 	"strings"
 )
 
-var fileName, word string
+var fileName, sentence string
+
+func checkSentence(bannedWords []string, sentence string) string {
+	char := "*"
+	words := strings.Fields(sentence)
+	var outputSentence, checkWord string
+
+	for _, word := range words {
+		checkWord = word
+		for _, bannedWord := range bannedWords {
+			if wordComparison(bannedWord, word) {
+				checkWord = strings.Repeat(char, len(word))
+				break
+			}
+		}
+		outputSentence += " " + checkWord
+	}
+	return outputSentence
+}
+
+func wordComparison(bannedWord string, word string) bool {
+	word = strings.ReplaceAll(word, ",", "")
+	word = strings.ReplaceAll(word, ".", "")
+	if strings.ToLower(word) == strings.ToLower(bannedWord) {
+		return true
+	} else {
+		return false
+	}
+}
 
 func main() {
-	char := "*"
+
 	fmt.Scan(&fileName)
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -31,17 +59,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Scan(&word)
-	for word != "exit" {
-
-		for _, bannedWord := range bannedWords {
-			if strings.ToLower(word) == strings.ToLower(bannedWord) {
-				word = strings.Repeat(char, len(word))
-				break
-			}
-		}
-		fmt.Println(word)
-		fmt.Scan(&word)
+	fmt.Scan(&sentence)
+	for sentence != "exit" {
+		fmt.Println(checkSentence(bannedWords, sentence))
+		fmt.Scan(&sentence)
 	}
 
 	fmt.Println("Bye!")
